@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iomanip>
+#include <stdexcept>
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
 
@@ -12,66 +14,106 @@ struct CLI_ERROR : std::runtime_error {
         : std::runtime_error("Error: " + std::string(msg)) {}
 };
 
+void print_game_info(const steam::GameInfo& game) {
+    double size_gb = static_cast<double>(game.size_bytes) / (1024.0 * 1024.0 * 1024.0);
+    std::filesystem::path full_path = game.library_path / "common" / game.install_dir;
+
+    std::cout << "Name:         " << game.name << "\n";
+    std::cout << "AppID:        " << game.app_id << "\n";
+    std::cout << "Size on Disk: " << std::fixed << std::setprecision(8) << size_gb << " GB\n";
+    std::cout << "Path:         " << full_path.string() << "\n\n";
+}
+
 int main(int argc, char* argv[]) {
     try {
         if (argc == 1) {
-            throw CLI_ERROR("No command");
+            throw CLI_ERROR("No command provided");
         }
 
         std::string command = argv[1];
 
+        // Locate Steam directory and scan libraries
+        std::string steam_path = steam::get_steam_path();
+        if (steam_path.empty()) {
+            throw CLI_ERROR("Could not locate Steam installation");
+        }
+
+        //Get library paths and installed games from steamapps and other drives
+        auto library_paths = steam::get_all_library_paths(steam_path);
+        auto installed_games = steam::scan_installed_games(library_paths);
+
+        //'steam run GAME_NAME' Runs a game
         if (command == "run") {
+            //'steam run' with no game name
             if (argc == 2) {
                 throw CLI_ERROR("Missing game name");
             }
 
-            // Combine all remaining arguments (if any) into a single name string
             std::string game_name = argv[2];
-            if (argc > 3) {
-                for (int i = 3; i < argc; i++) {
-                    game_name += " ";
-                    game_name += argv[i];
-                }
+            for (int i = 3; i < argc; i++) {
+                game_name += " ";
+                game_name += argv[i];
             }
-
-            // Locate Steam directory
-            std::string steam_path = steam::get_steam_path();
-            if (steam_path.empty()) {
-                throw CLI_ERROR("Could not locate Steam installation");
-            }
-
-            // Scan installed games in steamapps
-            auto library_paths = steam::get_library_paths(steam_path);
-            auto installed_games = steam::scan_installed_games(library_paths);
-
-            // Match game name to AppID
+            //Game name -> App id, or error if not found
             std::string app_id = steam::find_appid_by_name(installed_games, game_name);
             if (app_id.empty()) {
                 throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
             }
 
-            // Launch the game
             std::cout << "Launching " << game_name << "...";
             steam::launch_game(app_id);
+        }
+        //'steam info GAME_NAME/--all' shows info about a game or all games
+        else if (command == "info") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing argument for 'info' (provide a game name or '--all')");
+            }
+
+            std::string arg = argv[2];
+            for (int i = 3; i < argc; i++) {
+                arg += " ";
+                arg += argv[i];
+            }
+
+            if (arg == "--all") {
+                if (installed_games.empty()) {
+                    std::cout << "No installed Steam games found.\n";
+                    return 0;
+                }
+
+                std::cout << "Installed Games (" << installed_games.size() << ")\n-------------\n";
+                for (const auto& game : installed_games) {
+                    print_game_info(game);
+                    std::cout << "-------------\n";
+                }
+            }
+            else {
+                steam::GameInfo* game = steam::find_game_by_name(installed_games, arg);
+                if (!game) {
+                    throw CLI_ERROR("Could not find game matching \"" + arg + "\"");
+                }
+
+                print_game_info(*game);
+            }
         }
         else {
             throw CLI_ERROR("Unknown command: " + command);
         }
     }
     catch (const CLI_ERROR& e) {
-        std::cerr << e.what();
+        std::cerr << e.what() << '\n';
         return 1;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what();
+        std::cerr << "Error: " << e.what() << '\n';
         return 1;
     }
     catch (const char* msg) {
-        std::cerr << "Error: " << msg;
+        std::cerr << "Error: " << msg << '\n';
         return 1;
     }
     catch (...) {
-        std::cerr << "Error: unknown exception";
+        std::cerr << "Error: unknown exception\n";
         return 1;
     }
 
