@@ -83,7 +83,8 @@ int main(int argc, char* argv[]) {
             custom_commands = steam::load_custom_commands(config_path.string());
         }
         else {
-            std::cerr << color::warning << WARNING_ << "Could not find config / Commands.json, Custom commands will not be available" << color::reset << "\n";
+            std::cerr << color::warning << WARNING_ << "Could not find config/Commands.json, Custom commands will not be available" << color::reset << "\n";
+            config_path = steam::COMMANDS_JSON_NOT_FOUND;
         }
 
         // 'steam list' Prints all installed games
@@ -167,6 +168,25 @@ int main(int argc, char* argv[]) {
                 std::filesystem::path game_path = game->library_path / "common" / game->install_dir;
                 std::cout << game_path.string();
                 steam::open_folder(game_path);
+            }
+        }
+        else if (command == "config") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing sub-command in config command");
+            }
+
+            if (config_path == steam::COMMANDS_JSON_NOT_FOUND) {
+                throw CLI_ERROR("config/Commands.json does not exist, can not use a sub-command with it");
+            }
+
+            std::string sub_cmd = argv[2];
+
+            if (sub_cmd == "open") {
+                std::cout << "Opening Commands.json in default text editor...";
+                steam::open_in_default_editor(config_path);
+            }
+            else {
+                throw CLI_ERROR("Unknown sub-command \"" + sub_cmd + "\"");
             }
         }
         // Fallback to custom command lookup

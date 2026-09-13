@@ -11,6 +11,7 @@
 
 namespace steam {
     constexpr std::string_view SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
+    constexpr std::string_view COMMANDS_JSON_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: COMMANDS_JSON_NOT_FOUND]>";
 
     inline std::string get_steam_path() {
         HKEY hKey;
@@ -57,6 +58,17 @@ namespace steam {
     // Opens the specified filesystem folder in Windows Explorer
     inline void open_folder(const std::filesystem::path& folder_path) {
         ShellExecuteA(NULL, "open", folder_path.string().c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void open_in_default_editor(const std::filesystem::path& filePath) {
+        ShellExecuteA(
+            NULL,           // Parent window handle
+            "open",         // Operation / verb
+            filePath.string().c_str(),       // File path
+            NULL,           // Parameters
+            NULL,           // Working directory
+            SW_SHOWNORMAL   // Show window flag
+        );
     }
 
     struct SearchResult {
