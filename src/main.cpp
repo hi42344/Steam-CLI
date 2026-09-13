@@ -6,8 +6,7 @@
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
-#include "Colors.hpp"
-#include "helpers/file.hpp"
+#include "helpers/Colors.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -200,15 +199,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what();
+        std::cerr << color::error << "Error: " << e.what();
         return 1;
     }
     catch (const char* msg) {
-        std::cerr << "Error: " << msg;
+        std::cerr << color::error << "Error: " << msg;
         return 1;
     }
     catch (...) {
-        std::cerr << "Error: unknown exception";
+        std::cerr << color::error << "Error: unknown exception";
         return 1;
     }
 

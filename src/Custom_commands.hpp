@@ -69,7 +69,7 @@ namespace steam {
             }
         }
         catch (const std::exception&) {
-            // Ignore malformed custom command definitions gracefully
+            // Ignore malformed custom command definitions
         }
 
         return custom_cmds;
