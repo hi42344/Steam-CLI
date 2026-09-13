@@ -20,7 +20,7 @@ void print_game_info(const steam::GameInfo& game) {
 
     std::cout << "Name:         " << game.name << "\n";
     std::cout << "AppID:        " << game.app_id << "\n";
-    std::cout << "Size on Disk: " << std::fixed << std::setprecision(8) << size_gb << " GB\n";
+    std::cout << "Size on Disk: " << std::defaultfloat << size_gb << " GB\n";
     std::cout << "Path:         " << full_path.string() << "\n\n";
 }
 
@@ -29,6 +29,14 @@ int main(int argc, char* argv[]) {
         if (argc == 1) {
             throw CLI_ERROR("No command provided");
         }
+
+        //Combine remaining args for game name
+        auto combine_args = [argc, argv](std::string& game_name_) {
+            for (int i = 3; i < argc; i++) {
+                game_name_ += " ";
+                game_name_ += argv[i];
+            }
+            };
 
         std::string command = argv[1];
 
@@ -50,10 +58,8 @@ int main(int argc, char* argv[]) {
             }
 
             std::string game_name = argv[2];
-            for (int i = 3; i < argc; i++) {
-                game_name += " ";
-                game_name += argv[i];
-            }
+            combine_args(game_name);
+
             //Game name -> App id, or error if not found
             std::string app_id = steam::find_appid_by_name(installed_games, game_name);
             if (app_id.empty()) {
@@ -70,10 +76,7 @@ int main(int argc, char* argv[]) {
             }
 
             std::string arg = argv[2];
-            for (int i = 3; i < argc; i++) {
-                arg += " ";
-                arg += argv[i];
-            }
+            combine_args(arg);
 
             if (arg == "--all") {
                 if (installed_games.empty()) {
