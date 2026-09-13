@@ -103,5 +103,61 @@
         "online": false,
         "print-message": "Opening Steam downloads manager...",
         "Needs-game_name/appid-arg": false
+    },
+    "status": {
+        "uri": "https://steamstat.us/",
+        "local": false,
+        "online": false,
+        "print-message": "Checking Steam network status...",
+        "Needs-game_name/appid-arg": false
+    },
+    "library": {
+        "uri": "steam://open/games",
+        "local": false,
+        "online": false,
+        "print-message": "Switching to Steam Library view...",
+        "Needs-game_name/appid-arg": false
+    },
+    "inventory": {
+        "uri": "steam://open/inventory",
+        "local": false,
+        "online": false,
+        "print-message": "Opening Steam inventory...",
+        "Needs-game_name/appid-arg": false
+    },
+    "friends": {
+        "uri": "steam://open/friends",
+        "local": false,
+        "online": false,
+        "print-message": "Opening Steam Friends list...",
+        "Needs-game_name/appid-arg": false
+    },
+    "db": {
+        "uri": "https://steamdb.info/app/@APP_ID/",
+        "local": true,
+        "online": true,
+        "print-message": "Opening SteamDB entry for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "artwork": {
+        "uri": "https://steamcommunity.com/app/@APP_ID/images/",
+        "local": true,
+        "online": true,
+        "print-message": "Opening artwork hub for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "stats": {
+        "uri": "https://steamcommunity.com/stats/@APP_ID/stats/",
+        "local": true,
+        "online": true,
+        "print-message": "Opening personal stats for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "console": {
+        "uri": "steam://open/console",
+        "local": true,
+        "online": true,
+        "print-message": "Opening Steam client console...",
+        "Needs-game_name/appid-arg": false
     }
 }

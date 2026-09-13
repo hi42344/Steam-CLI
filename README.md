@@ -21,9 +21,11 @@ My first open-source project
     - `open` -> `steam config open`: **Opens the config/Commands.json file in your default text editor**
 }
 
-### Standard Configuration Commands
+### Standard Config Commands
 
-**These default commands come pre-configured and can be customized or extended**
+**These default commands come pre-configured in `config/Commands.json` and can be customized or extended if needed**
+
+#### Game Commands
 
 - `run` -> `steam run GAME NAME / APPID`: **Launches a game**
 - `verify` -> `steam verify GAME NAME / APPID`: **Validates game files**
@@ -31,15 +33,26 @@ My first open-source project
 - `uninstall` -> `steam uninstall GAME NAME / APPID`: **Prompts Steam to uninstall a game**
 - `backup` -> `steam backup GAME NAME / APPID`: **Opens the backup wizard for a game**
 - `news` -> `steam news GAME NAME / APPID`: **Opens the news hub for a game**
-- `achievements` -> `steam achievements GAME NAME / APPID`: **Opens achievements on Steam Community**
+- `achievements` -> `steam achievements GAME NAME / APPID`: **Opens community achievements for a game**
 - `workshop` -> `steam workshop GAME NAME / APPID`: **Opens the Steam Workshop hub for a game**
 - `community` -> `steam community GAME NAME / APPID`: **Opens the game's Community hub**
 - `store` -> `steam store GAME NAME / APPID`: **Opens the game's Steam Store page**
 - `guides` -> `steam guides GAME NAME / APPID`: **Opens community guides for a game**
 - `discussions` -> `steam discussions GAME NAME / APPID`: **Opens community forums for a game**
-- `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw URI, automatically prefixing `steam://` if no protocol is supplied**
+- `db` -> `steam db GAME NAME / APPID`: **Opens the game's entry on SteamDB**
+- `artwork` -> `steam artwork GAME NAME / APPID`: **Opens community artwork and screenshots for a game**
+- `stats` -> `steam stats GAME NAME / APPID`: **Opens personal stats for a game**
+
+#### Other
+
 - `settings` -> `steam settings`: **Opens Steam settings**
 - `downloads` -> `steam downloads`: **Opens the Steam downloads manager**
+- `library` -> `steam library`: **Switches Steam view directly to your game library**
+- `friends` -> `steam friends`: **Opens your Steam Friends list**
+- `inventory` -> `steam inventory`: **Opens your Steam inventory**
+- `console` -> `steam console`: **Opens the native Steam client developer console**
+- `status` -> `steam status`: **Opens SteamStat.us to check Steam network and service operational status**
+- `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw URI, automatically prefixing `steam://` if no protocol is supplied**
 
 ## Custom Commands (`config/Commands.json`)
 
