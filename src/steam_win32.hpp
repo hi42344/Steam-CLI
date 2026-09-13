@@ -9,7 +9,7 @@
 #include <boost/json/src.hpp>
 
 namespace steam {
-    constexpr const char* SEARCH_RESULT_NOT_FOUND = "STEAM_CLI<NO GAME FOUND>";
+    constexpr const char* SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
 
     inline std::string get_steam_path() {
         HKEY hKey;
@@ -57,15 +57,33 @@ namespace steam {
         ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
     }
 
+    inline void backup_game(const std::string& app_id) {
+        std::string uri = "steam://backup/" + app_id;
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void open_news(const std::string& app_id) {
+        std::string uri = "steam://appnews/" + app_id;
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void open_achievements(const std::string& app_id) {
+        std::string url = "https://steamcommunity.com/my/stats/" + app_id + "/achievements";
+        ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
     struct SearchResult {
         std::string id;
         std::string name;
         std::string type;
     };
 
-    inline std::string search_appid_online(const std::string& game_name) {
+    // Fetches online search hits from Steam without forcing interactive selection
+    inline std::vector<SearchResult> get_results_online(const std::string& game_name) {
+        std::vector<SearchResult> results;
+
         HINTERNET hInternet = ::InternetOpenA("steam-cli", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-        if (!hInternet) return "";
+        if (!hInternet) return results;
 
         std::string query = game_name;
         size_t pos = 0;
@@ -79,7 +97,7 @@ namespace steam {
         HINTERNET hConnect = ::InternetOpenUrlA(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
         if (!hConnect) {
             ::InternetCloseHandle(hInternet);
-            return "";
+            return results;
         }
 
         std::string response;
@@ -94,9 +112,7 @@ namespace steam {
         ::InternetCloseHandle(hConnect);
         ::InternetCloseHandle(hInternet);
 
-        if (response.empty()) return "";
-
-        std::vector<SearchResult> results;
+        if (response.empty()) return results;
 
         try {
             boost::json::value jv = boost::json::parse(response);
@@ -126,20 +142,24 @@ namespace steam {
             }
         }
         catch (const std::exception&) {
-            return "";
+            return results;
         }
 
-        //Placeholder if no results found (so we can give a better/more specific error message)
+        return results;
+    }
+
+    // Wraps get_results_online for interactive flows like `steam install`
+    inline std::string search_appid_online(const std::string& game_name) {
+        auto results = get_results_online(game_name);
+
         if (results.empty()) {
             return SEARCH_RESULT_NOT_FOUND;
         }
 
-        // Auto-select if only one hit exists
         if (results.size() == 1) {
             return results[0].id;
         }
 
-        // Print all matches returned by the search query
         std::cout << "\nSelect target (1-" << results.size() << "):\n";
         for (size_t i = 0; i < results.size(); ++i) {
             std::cout << "  [" << (i + 1) << "] " << results[i].name

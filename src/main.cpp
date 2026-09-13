@@ -24,11 +24,22 @@ void print_game_info(const steam::GameInfo& game) {
     std::cout << "Path:         " << full_path.string() << "\n\n";
 }
 
+void print_search_info(const steam::SearchResult& search_res) {
+    std::cout << "| Name:  " << search_res.name << "\n";
+    std::cout << "| AppID: " << search_res.id << "\n";
+    std::cout << "| Type:  " << search_res.type << "\n";
+}
+
 bool is_number(const std::string& s) {
     return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
 }
 
+inline void app_id_not_found(const std::string& game_name) {
+    throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+}
+
 int main(int argc, char* argv[]) {
+    constexpr const char* MISSING_GAME_NAME_ERROR = "Missing game name";
     try {
         if (argc == 1) {
             throw CLI_ERROR("No command provided");
@@ -43,7 +54,7 @@ int main(int argc, char* argv[]) {
             };
 
         //The seperator for when printing games/game infos
-        auto game_sep = "-------------";
+        constexpr const char* game_sep = "-------------";
         std::string command = argv[1];
 
         // Locate Steam directory and scan libraries
@@ -60,7 +71,7 @@ int main(int argc, char* argv[]) {
         if (command == "run") {
             //'steam run' with no game name
             if (argc == 2) {
-                throw CLI_ERROR("Missing game name");
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
             }
 
             std::string game_name = argv[2];
@@ -69,7 +80,7 @@ int main(int argc, char* argv[]) {
             //Game name -> App id, or error if not found
             std::string app_id = steam::find_appid_by_name(installed_games, game_name);
             if (app_id.empty()) {
-                throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+                app_id_not_found(game_name);
             }
 
             std::cout << "Launching " << game_name << "...";
@@ -78,7 +89,7 @@ int main(int argc, char* argv[]) {
         //'steam verify GAME_NAME' Triggers file validation for a game
         else if (command == "verify") {
             if (argc == 2) {
-                throw CLI_ERROR("Missing game name");
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
             }
 
             std::string game_name = argv[2];
@@ -86,7 +97,7 @@ int main(int argc, char* argv[]) {
 
             std::string app_id = steam::find_appid_by_name(installed_games, game_name);
             if (app_id.empty()) {
-                throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+                app_id_not_found(game_name);
             }
 
             std::cout << "Verifying files for " << game_name << "...";
@@ -103,15 +114,15 @@ int main(int argc, char* argv[]) {
 
             std::string app_id;
 
-            // 1. Direct AppID passed
+            // Direct AppID passed
             if (is_number(arg)) {
                 app_id = arg;
             }
             else {
-                // 2. Check installed games locally first
+                // Check installed games locally first
                 app_id = steam::find_appid_by_name(installed_games, arg);
 
-                // 3. Prompt user from online search results if not found locally
+                // Prompt user from online search results if not found locally
                 if (app_id.empty()) {
                     app_id = steam::search_appid_online(arg);
                 }
@@ -123,7 +134,7 @@ int main(int argc, char* argv[]) {
             }
             //If not found we will error that
             if (app_id == steam::SEARCH_RESULT_NOT_FOUND) {
-                throw CLI_ERROR("\"" + arg + "\" was not found");
+                app_id_not_found(arg);
             }
 
             std::cout << "Installing " << app_id << "...\n";
@@ -132,7 +143,7 @@ int main(int argc, char* argv[]) {
         //'steam uninstall GAME_NAME' Prompts Steam to uninstall a game
         else if (command == "uninstall") {
             if (argc == 2) {
-                throw CLI_ERROR("Missing game name");
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
             }
 
             std::string game_name = argv[2];
@@ -140,7 +151,7 @@ int main(int argc, char* argv[]) {
 
             std::string app_id = steam::find_appid_by_name(installed_games, game_name);
             if (app_id.empty()) {
-                throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+                app_id_not_found(game_name);
             }
 
             std::cout << "Uninstalling " << game_name << "...";
@@ -182,11 +193,88 @@ int main(int argc, char* argv[]) {
             else {
                 steam::GameInfo* game = steam::find_game_by_name(installed_games, arg);
                 if (!game) {
-                    throw CLI_ERROR("Could not find game matching \"" + arg + "\"");
+                    app_id_not_found(arg);
                 }
 
                 print_game_info(*game);
             }
+        }
+        // 'steam search QUERY'
+        else if (command == "search") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing search query");
+            }
+
+            std::string query = argv[2];
+            combine_args(query);
+
+            auto results = steam::get_results_online(query);
+
+            if (results.empty()) {
+                throw CLI_ERROR("No games found matching \"" + query + "\"");
+            }
+
+            std::cout << '|' << game_sep << "\n";
+            for (const auto& res : results) {
+                print_search_info(res);
+                std::cout << "|\n|" << game_sep << '\n';
+            }
+        }
+        // 'steam backup GAME NAME'
+        else if (command == "backup") {
+            if (argc == 2) {
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
+            }
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                app_id_not_found(game_name);
+            }
+
+            std::cout << "Opening backup wizard for " << game_name << "...";
+            steam::backup_game(app_id);
+        }
+        // 'steam news GAME NAME'
+        else if (command == "news") {
+            if (argc == 2) {
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
+            }
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                app_id = steam::search_appid_online(game_name);
+            }
+
+            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
+                app_id_not_found(game_name);
+            }
+
+            std::cout << "Opening news for " << game_name << "...";
+            steam::open_news(app_id);
+        }
+        // 'steam achievements GAME NAME'
+        else if (command == "achievements") {
+            if (argc == 2) {
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
+            }
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                app_id = steam::search_appid_online(game_name);
+            }
+
+            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
+                app_id_not_found(game_name);
+            }
+
+            std::cout << "Opening achievements for " << game_name << "...";
+            steam::open_achievements(app_id);
         }
         else {
             throw CLI_ERROR("Unknown command: " + command);
