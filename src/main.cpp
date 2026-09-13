@@ -38,6 +38,8 @@ int main(int argc, char* argv[]) {
             }
             };
 
+        //The seperator for when printing games/game infos
+        auto game_sep = "-------------";
         std::string command = argv[1];
 
         // Locate Steam directory and scan libraries
@@ -69,6 +71,18 @@ int main(int argc, char* argv[]) {
             std::cout << "Launching " << game_name << "...";
             steam::launch_game(app_id);
         }
+        //'steam list' Prints all installed game names separated by '-------------'
+        else if (command == "list") {
+            if (installed_games.empty()) {
+                std::cout << "No installed Steam games found.";
+                return 0;
+            }
+
+            std::cout << game_sep << "\n";
+            for (const auto& game : installed_games) {
+                std::cout << game.name << "\n" << game_sep << "\n";
+            }
+        }
         //'steam info GAME_NAME/--all' shows info about a game or all games
         else if (command == "info") {
             if (argc == 2) {
@@ -84,10 +98,10 @@ int main(int argc, char* argv[]) {
                     return 0;
                 }
 
-                std::cout << "Installed Games (" << installed_games.size() << ")\n-------------\n";
+                std::cout << "Installed Games (" << installed_games.size() << ")\n" << game_sep << '\n';
                 for (const auto& game : installed_games) {
                     print_game_info(game);
-                    std::cout << "-------------\n";
+                    std::cout << game_sep << '\n';
                 }
             }
             else {
