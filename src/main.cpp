@@ -71,7 +71,41 @@ int main(int argc, char* argv[]) {
             std::cout << "Launching " << game_name << "...";
             steam::launch_game(app_id);
         }
-        //'steam list' Prints all installed game names separated by '-------------'
+        //'steam verify GAME_NAME' Triggers file validation for a game
+        else if (command == "verify") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing game name");
+            }
+
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+            }
+
+            std::cout << "Verifying files for " << game_name << "...";
+            steam::verify_game_files(app_id);
+        }
+        //'steam uninstall GAME_NAME' Prompts Steam to uninstall a game
+        else if (command == "uninstall") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing game name");
+            }
+
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                throw CLI_ERROR("Could not find game matching \"" + game_name + "\"");
+            }
+
+            std::cout << "Uninstalling " << game_name << "...";
+            steam::uninstall_game(app_id);
+        }
+        //'steam list' Prints all installed, game names are seperated
         else if (command == "list") {
             if (installed_games.empty()) {
                 std::cout << "No installed Steam games found.";
@@ -83,7 +117,7 @@ int main(int argc, char* argv[]) {
                 std::cout << game.name << "\n" << game_sep << "\n";
             }
         }
-        //'steam info GAME_NAME/--all' shows info about a game or all games
+        //'steam info GAME_NAME/--all' shows info about a game or all games, if --all game names are seperated
         else if (command == "info") {
             if (argc == 2) {
                 throw CLI_ERROR("Missing argument for 'info' (provide a game name or '--all')");
@@ -118,19 +152,19 @@ int main(int argc, char* argv[]) {
         }
     }
     catch (const CLI_ERROR& e) {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what();
         return 1;
     }
     catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << '\n';
+        std::cerr << "Error: " << e.what();
         return 1;
     }
     catch (const char* msg) {
-        std::cerr << "Error: " << msg << '\n';
+        std::cerr << "Error: " << msg;
         return 1;
     }
     catch (...) {
-        std::cerr << "Error: unknown exception\n";
+        std::cerr << "Error: unknown exception";
         return 1;
     }
 

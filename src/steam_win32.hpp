@@ -38,4 +38,14 @@ namespace steam {
         ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
     }
 
+    inline void verify_game_files(const std::string& app_id) {
+        std::string uri = "steam://validate/" + app_id;
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void uninstall_game(const std::string& app_id) {
+        std::string uri = "steam://uninstall/" + app_id;
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
 }
