@@ -16,3 +16,4 @@ I don't like using the UI much, and this is useful to me
 - `list` -> `steam list`: **Lists all installed game names with their names (with line seperators)**
 - `verify` -> `steam verify GAME NAME`: **Verifys a game**
 - `uninstall` -> `steam uninstall GAME NAME`: **Uninstalls a game**
+- `install` -> `steam install GAME NAME/APP ID`: **Installs a game from either a app id or a name, if a name it gives a list to pick from (if any results)**

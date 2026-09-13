@@ -24,6 +24,10 @@ void print_game_info(const steam::GameInfo& game) {
     std::cout << "Path:         " << full_path.string() << "\n\n";
 }
 
+bool is_number(const std::string& s) {
+    return !s.empty() && std::all_of(s.begin(), s.end(), ::isdigit);
+}
+
 int main(int argc, char* argv[]) {
     try {
         if (argc == 1) {
@@ -87,6 +91,41 @@ int main(int argc, char* argv[]) {
 
             std::cout << "Verifying files for " << game_name << "...";
             steam::verify_game_files(app_id);
+        }
+        //'steam install GAME NAME/APPID' Prompts Steam to install a game
+        else if (command == "install") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing game name or AppID");
+            }
+
+            std::string arg = argv[2];
+            combine_args(arg);
+
+            std::string app_id;
+
+            // 1. Direct AppID passed
+            if (is_number(arg)) {
+                app_id = arg;
+            }
+            else {
+                // 2. Check installed games locally first
+                app_id = steam::find_appid_by_name(installed_games, arg);
+
+                // 3. Prompt user from online search results if not found locally
+                if (app_id.empty()) {
+                    app_id = steam::search_appid_online(arg);
+                }
+            }
+
+            if (app_id.empty()) {
+                throw CLI_ERROR("Installation cancelled or could not resolve AppID for \"" + arg + "\".");
+            }
+            if (app_id == "STEAM_CLI<NO GAME FOUND>") {
+                throw CLI_ERROR("\"" + arg + "\" was not found");
+            }
+
+            std::cout << "Installing " << app_id << "...\n";
+            steam::install_game(app_id);
         }
         //'steam uninstall GAME_NAME' Prompts Steam to uninstall a game
         else if (command == "uninstall") {

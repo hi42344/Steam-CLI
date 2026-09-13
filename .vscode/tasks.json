@@ -12,9 +12,10 @@
                 "-s",
                 "src/*.cpp",
                 "-Isrc",
-                "-lshell32",
                 "-o",
-                "${workspaceFolder}/steam.exe"
+                "${workspaceFolder}/steam.exe",
+                "-lshell32",
+                "-lwininet"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

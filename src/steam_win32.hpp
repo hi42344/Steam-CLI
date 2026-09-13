@@ -1,9 +1,12 @@
 #pragma once
+#pragma comment(lib, "wininet.lib")
 #include <windows.h>
+#include <wininet.h>
 #include <shellapi.h>
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <boost/json/src.hpp>
 
 namespace steam {
 
@@ -46,6 +49,109 @@ namespace steam {
     inline void uninstall_game(const std::string& app_id) {
         std::string uri = "steam://uninstall/" + app_id;
         ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void install_game(const std::string& app_id) {
+        std::string uri = "steam://install/" + app_id;
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    struct SearchResult {
+        std::string id;
+        std::string name;
+        std::string type;
+    };
+
+    inline std::string search_appid_online(const std::string& game_name) {
+        HINTERNET hInternet = ::InternetOpenA("steam-cli", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+        if (!hInternet) return "";
+
+        std::string query = game_name;
+        size_t pos = 0;
+        while ((pos = query.find(' ', pos)) != std::string::npos) {
+            query.replace(pos, 1, "%20");
+            pos += 3;
+        }
+
+        std::string url = "https://store.steampowered.com/api/storesearch/?term=" + query + "&l=english&cc=US";
+
+        HINTERNET hConnect = ::InternetOpenUrlA(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
+        if (!hConnect) {
+            ::InternetCloseHandle(hInternet);
+            return "";
+        }
+
+        std::string response;
+        char buffer[4096];
+        DWORD bytesRead = 0;
+
+        while (::InternetReadFile(hConnect, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
+            buffer[bytesRead] = '\0';
+            response += buffer;
+        }
+
+        ::InternetCloseHandle(hConnect);
+        ::InternetCloseHandle(hInternet);
+
+        if (response.empty()) return "";
+
+        std::vector<SearchResult> results;
+
+        try {
+            boost::json::value jv = boost::json::parse(response);
+            const auto& obj = jv.as_object();
+
+            if (obj.contains("items")) {
+                const auto& items = obj.at("items").as_array();
+                for (const auto& item_val : items) {
+                    const auto& item = item_val.as_object();
+
+                    std::string id = std::to_string(item.at("id").as_int64());
+                    std::string name = item.contains("name") ? std::string(item.at("name").as_string()) : "Unknown";
+                    std::string type = item.contains("type") ? std::string(item.at("type").as_string()) : "app";
+
+                    bool exists = false;
+                    for (const auto& res : results) {
+                        if (res.id == id) {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (!exists) {
+                        results.push_back({ id, name, type });
+                    }
+                }
+            }
+        }
+        catch (const std::exception&) {
+            return "";
+        }
+
+        if (results.empty()) {
+            return "STEAM_CLI<NO GAME FOUND>";
+        }
+
+        // Auto-select if only one hit exists
+        if (results.size() == 1) {
+            return results[0].id;
+        }
+
+        // Print all matches returned by the search query
+        std::cout << "\nSelect target (1-" << results.size() << "):\n";
+        for (size_t i = 0; i < results.size(); ++i) {
+            std::cout << "  [" << (i + 1) << "] " << results[i].name
+                << " (" << results[i].type << ", AppID: " << results[i].id << ")\n";
+        }
+        std::cout << "> ";
+
+        int choice = 0;
+        if (std::cin >> choice && choice > 0 && choice <= static_cast<int>(results.size())) {
+            return results[choice - 1].id;
+        }
+
+        std::cin.clear();
+        return results[0].id;
     }
 
 }
