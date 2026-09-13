@@ -24,3 +24,30 @@ My first open-source project
 - `path` -> `steam path GAME NAME`: **Prints the game's path and opens it in file explorer (bare `steam path` prints steam's path and opens it in file explorer)**
 - `workshop` -> `steam workshop GAME NAME`: **Opens a game workshop (locally installed or online) on the web**
 - `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw uri, auto adding the 'steam://' prefix if no http://, https://, or steam:// found**
+
+## Custom Commands (`config/Commands.json`)
+
+**You can create custom commands by defining them in `config/Commands.json`**
+
+### Configuration Schema
+
+**Add entries to `config/Commands.json` using the following format: (almost all the things all optional, these just show everything for clarity)**
+
+```json
+{
+  "community": {
+    "uri": "[https://steamcommunity.com/app/@APP_ID](https://steamcommunity.com/app/@APP_ID)",
+    "local": true,
+    "online": true,
+    "print-message": "Opening community hub for @GAME_NAME...",
+    "Needs-game_name/appid-arg": true
+  },
+  "settings": {
+    "uri": "steam://open/settings",
+    "local": false,
+    "online": false,
+    "print-message": "Opening Steam settings...",
+    "Needs-game_name/appid-arg": false
+  }
+}
+```

@@ -1,0 +1,44 @@
+{
+    "community": {
+        "uri": "https://steamcommunity.com/app/@APP_ID",
+        "local": true,
+        "online": true,
+        "print-message": "Opening community hub for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "store": {
+        "uri": "https://store.steampowered.com/app/@APP_ID",
+        "local": true,
+        "online": true,
+        "print-message": "Opening Store page for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "guides": {
+        "uri": "https://steamcommunity.com/app/@APP_ID/guides",
+        "local": true,
+        "online": true,
+        "print-message": "Opening guides for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "discussions": {
+        "uri": "https://steamcommunity.com/app/@APP_ID/discussions",
+        "local": true,
+        "online": true,
+        "print-message": "Opening discussions for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "settings": {
+        "uri": "steam://open/settings",
+        "local": false,
+        "online": false,
+        "print-message": "Opening Steam settings...",
+        "Needs-game_name/appid-arg": false
+    },
+    "downloads": {
+        "uri": "steam://open/downloads",
+        "local": false,
+        "online": false,
+        "print-message": "Opening Steam downloads manager...",
+        "Needs-game_name/appid-arg": false
+    }
+}

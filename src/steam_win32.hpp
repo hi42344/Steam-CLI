@@ -38,6 +38,13 @@ namespace steam {
         return paths;
     }
 
+    //So we can use relative paths when possible
+    inline std::filesystem::path get_exe_directory() {
+        char path[MAX_PATH];
+        GetModuleFileNameA(NULL, path, MAX_PATH);
+        return std::filesystem::path(path).parent_path();
+    }
+
     inline void launch_game(const std::string& app_id) {
         std::string uri = "steam://run/" + app_id;
         ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);

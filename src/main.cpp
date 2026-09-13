@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
+#include "Custom_commands.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -66,6 +67,9 @@ int main(int argc, char* argv[]) {
         //Get library paths and installed games from steamapps and other drives
         auto library_paths = steam::get_all_library_paths(steam_path);
         auto installed_games = steam::scan_installed_games(library_paths);
+
+        std::filesystem::path config_path = steam::get_exe_directory() / "config" / "Commands.json";
+        auto custom_commands = steam::load_custom_commands(config_path);
 
         //'steam run GAME_NAME' Runs a game
         if (command == "run") {
@@ -331,7 +335,27 @@ int main(int argc, char* argv[]) {
             steam::execute_uri(raw_uri);
         }
         else {
-            throw CLI_ERROR("Unknown command: " + command);
+            auto it = custom_commands.find(command);
+            if (it != custom_commands.end()) {
+                const auto& custom_cmd = it->second;
+                std::string arg;
+
+                if (custom_cmd.needs_arg) {
+                    if (argc == 2) {
+                        throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
+                    }
+                    arg = argv[2];
+                    combine_args(arg);
+                }
+
+                bool success = steam::execute_custom_command(custom_cmd, arg, installed_games);
+                if (!success && custom_cmd.needs_arg) {
+                    app_id_not_found(arg);
+                }
+            }
+            else {
+                throw CLI_ERROR("Unknown command: " + command);
+            }
         }
     }
     catch (const CLI_ERROR& e) {
