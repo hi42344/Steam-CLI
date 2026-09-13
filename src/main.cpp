@@ -6,13 +6,15 @@
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
+#include "Colors.hpp"
+#include "helpers/file.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
-        : std::runtime_error("Error: " + msg) {}
+        : std::runtime_error(std::string(color::error) + "Error: " + msg + color::reset) {}
 
     explicit CLI_ERROR(const char* msg)
-        : std::runtime_error("Error: " + std::string(msg)) {}
+        : std::runtime_error(std::string(color::error) + "Error: " + std::string(msg) + color::reset) {}
 };
 
 void print_game_info(const steam::GameInfo& game) {
@@ -41,6 +43,7 @@ inline void app_id_not_found(const std::string& game_name) {
 
 int main(int argc, char* argv[]) {
     constexpr const char* MISSING_GAME_NAME_ERROR = "Missing game name";
+    constexpr const char* WARNING_ = "Warning: ";
     try {
         if (argc == 1) {
             throw CLI_ERROR("No command provided");
@@ -68,8 +71,21 @@ int main(int argc, char* argv[]) {
         auto library_paths = steam::get_all_library_paths(steam_path);
         auto installed_games = steam::scan_installed_games(library_paths);
 
-        std::filesystem::path config_path = steam::get_exe_directory() / "config" / "Commands.json";
-        auto custom_commands = steam::load_custom_commands(config_path);
+        auto exe_directory = steam::get_exe_directory();
+        std::filesystem::path config_path = exe_directory / "config" / "Commands.json";
+
+        if (!std::filesystem::exists(config_path)) {
+            config_path = exe_directory.parent_path() / "config" / "Commands.json";
+        }
+
+        std::unordered_map<std::string, steam::CustomCommand> custom_commands;
+
+        if (std::filesystem::exists(config_path)) {
+            custom_commands = steam::load_custom_commands(config_path.string());
+        }
+        else {
+            std::cerr << color::warning << WARNING_ << "Could not find config / Commands.json, Custom commands will not be available" << color::reset << "\n";
+        }
 
         // 'steam list' Prints all installed games
         if (command == "list") {
@@ -175,7 +191,7 @@ int main(int argc, char* argv[]) {
                 }
             }
             else {
-                throw CLI_ERROR("Unknown command: " + command);
+                throw CLI_ERROR("Unknown command \"" + command + "\"");
             }
         }
     }
