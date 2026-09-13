@@ -11,19 +11,32 @@ My first open-source project
 
 ## Commands
 
-- `run` -> `steam run GAME NAME`: **Runs a game**
-- `info` -> `steam info GAME NAME`: **Displays info about a game or all games (ex: "Name:         Counter-Strike 2 AppID:        730 Size on Disk: 66.66391980 GB Path:         c:/program files (x86)/steam\steamapps\common\Counter-Strike Global Offensive" (for 'steam info --all' it displays all of your games stats like the CS2 example (with line seperators)))**
-- `list` -> `steam list`: **Lists all installed game names with their names (with line seperators)**
-- `verify` -> `steam verify GAME NAME`: **Verifys a game**
-- `uninstall` -> `steam uninstall GAME NAME`: **Uninstalls a game**
-- `install` -> `steam install GAME NAME/APP ID`: **Installs a game from either a app id or a name, if a name it gives a list to pick from (if any results)**
-- `search` -> `steam search GAME NAME/APP ID`: **Searchs for a game and gives a list of results (if any)**
-- `backup` -> `steam backup GAME NAME`: **Opens the backup wizard for a game**
-- `news` -> `steam news GAME NAME`: **Opens the news for a game (checks offline or online (online if game not found locally))**
-- `achievements` -> `steam achievements GAME NAME`: **Opens the achievements of a game on the web (locally or online)**
-- `path` -> `steam path GAME NAME`: **Prints the game's path and opens it in file explorer (bare `steam path` prints steam's path and opens it in file explorer)**
-- `workshop` -> `steam workshop GAME NAME`: **Opens a game workshop (locally installed or online) on the web**
-- `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw uri, auto adding the 'steam://' prefix if no http://, https://, or steam:// found**
+### Built-in Commands
+
+- `list` -> `steam list`: **Lists all installed games separated by line dividers**
+- `info` -> `steam info GAME NAME` / `steam info --all`: **Displays size, AppID, and install paths for a game or all installed games**
+- `search` -> `steam search QUERY`: **Searches the Steam Store API online for games and displays matching results**
+- `path` -> `steam path GAME NAME`: **Prints and opens the game folder in File Explorer (running `steam path` alone opens the main Steam folder)**
+
+### Standard Configuration Commands
+
+**These default commands come pre-configured out of the box and can be customized or extended**
+
+- `run` -> `steam run GAME NAME / APPID`: **Launches a game**
+- `verify` -> `steam verify GAME NAME / APPID`: **Validates game files**
+- `install` -> `steam install GAME NAME / APPID`: **Prompts Steam to install a game**
+- `uninstall` -> `steam uninstall GAME NAME / APPID`: **Prompts Steam to uninstall a game**
+- `backup` -> `steam backup GAME NAME / APPID`: **Opens the backup wizard for a game**
+- `news` -> `steam news GAME NAME / APPID`: **Opens the news hub for a game**
+- `achievements` -> `steam achievements GAME NAME / APPID`: **Opens achievements on Steam Community**
+- `workshop` -> `steam workshop GAME NAME / APPID`: **Opens the Steam Workshop hub for a game**
+- `community` -> `steam community GAME NAME / APPID`: **Opens the game's Community hub**
+- `store` -> `steam store GAME NAME / APPID`: **Opens the game's Steam Store page**
+- `guides` -> `steam guides GAME NAME / APPID`: **Opens community guides for a game**
+- `discussions` -> `steam discussions GAME NAME / APPID`: **Opens community forums for a game**
+- `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw URI, automatically prefixing `steam://` if no protocol is supplied**
+- `settings` -> `steam settings`: **Opens Steam settings**
+- `downloads` -> `steam downloads`: **Opens the Steam downloads manager**
 
 ## Custom Commands (`config/Commands.json`)
 

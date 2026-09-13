@@ -13,7 +13,7 @@
                 "src/*.cpp",
                 "-Isrc",
                 "-o",
-                "${workspaceFolder}/steam.exe",
+                "${workspaceFolder}/build/steam.exe",
                 "-lshell32",
                 "-lwininet"
             ],
