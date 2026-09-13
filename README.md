@@ -20,7 +20,7 @@ My first open-source project
 
 ### Standard Configuration Commands
 
-**These default commands come pre-configured out of the box and can be customized or extended**
+**These default commands come pre-configured and can be customized or extended**
 
 - `run` -> `steam run GAME NAME / APPID`: **Launches a game**
 - `verify` -> `steam verify GAME NAME / APPID`: **Validates game files**
