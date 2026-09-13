@@ -1,5 +1,5 @@
 # Steam-CLI
-I don't like using the UI much, and this is useful to me
+My first open-source project
 
 # How To Use
 

@@ -9,6 +9,7 @@
 #include <boost/json/src.hpp>
 
 namespace steam {
+    constexpr const char* SEARCH_RESULT_NOT_FOUND = "STEAM_CLI<NO GAME FOUND>";
 
     inline std::string get_steam_path() {
         HKEY hKey;
@@ -128,8 +129,9 @@ namespace steam {
             return "";
         }
 
+        //Placeholder if no results found (so we can give a better/more specific error message)
         if (results.empty()) {
-            return "STEAM_CLI<NO GAME FOUND>";
+            return SEARCH_RESULT_NOT_FOUND;
         }
 
         // Auto-select if only one hit exists

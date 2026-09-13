@@ -117,10 +117,12 @@ int main(int argc, char* argv[]) {
                 }
             }
 
+            //Other type of error
             if (app_id.empty()) {
-                throw CLI_ERROR("Installation cancelled or could not resolve AppID for \"" + arg + "\".");
+                throw CLI_ERROR("Installation cancelled");
             }
-            if (app_id == "STEAM_CLI<NO GAME FOUND>") {
+            //If not found we will error that
+            if (app_id == steam::SEARCH_RESULT_NOT_FOUND) {
                 throw CLI_ERROR("\"" + arg + "\" was not found");
             }
 
