@@ -43,7 +43,7 @@ My first open-source project
     "Needs-game_name/appid-arg": true
   },
   "settings": {
-    "uri": "steam://open/settings",
+    "uri": "open/settings",
     "local": false,
     "online": false,
     "print-message": "Opening Steam settings...",

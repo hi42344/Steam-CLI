@@ -45,47 +45,6 @@ namespace steam {
         return std::filesystem::path(path).parent_path();
     }
 
-    inline void launch_game(const std::string& app_id) {
-        std::string uri = "steam://run/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void verify_game_files(const std::string& app_id) {
-        std::string uri = "steam://validate/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void uninstall_game(const std::string& app_id) {
-        std::string uri = "steam://uninstall/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void install_game(const std::string& app_id) {
-        std::string uri = "steam://install/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void backup_game(const std::string& app_id) {
-        std::string uri = "steam://backup/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void open_news(const std::string& app_id) {
-        std::string uri = "steam://appnews/" + app_id;
-        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    inline void open_achievements(const std::string& app_id) {
-        std::string url = "https://steamcommunity.com/my/stats/" + app_id + "/achievements";
-        ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
-    // Opens a game's workshop hub (online)
-    inline void open_workshop(const std::string& app_id) {
-        std::string url = "https://steamcommunity.com/app/" + app_id + "/workshop/";
-        ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-    }
-
     inline void execute_uri(const std::string& raw_uri) {
         std::string uri = raw_uri;
         // Prefix steam:// if the user provided uri doesn't have a prefix of http/https/steam://

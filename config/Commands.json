@@ -1,4 +1,67 @@
 {
+    "run": {
+        "uri": "steam://rungameid/@APP_ID",
+        "local": true,
+        "online": false,
+        "print-message": "Launching @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "verify": {
+        "uri": "steam://validate/@APP_ID",
+        "local": true,
+        "online": false,
+        "print-message": "Verifying files for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "install": {
+        "uri": "steam://install/@APP_ID",
+        "local": true,
+        "online": true,
+        "print-message": "Installing @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "uninstall": {
+        "uri": "steam://uninstall/@APP_ID",
+        "local": true,
+        "online": false,
+        "print-message": "Uninstalling @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "backup": {
+        "uri": "steam://backup/@APP_ID",
+        "local": true,
+        "online": false,
+        "print-message": "Opening backup wizard for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "news": {
+        "uri": "https://store.steampowered.com/news/app/@APP_ID",
+        "local": true,
+        "online": true,
+        "print-message": "Opening news for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "achievements": {
+        "uri": "https://steamcommunity.com/stats/@APP_ID/achievements",
+        "local": true,
+        "online": true,
+        "print-message": "Opening achievements for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "workshop": {
+        "uri": "https://steamcommunity.com/app/@APP_ID/workshopfolder",
+        "local": true,
+        "online": true,
+        "print-message": "Opening workshop for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
+    },
+    "uri": {
+        "uri": "@GAME_NAME",
+        "local": false,
+        "online": false,
+        "print-message": "Executing uri \"@GAME_NAME\"...",
+        "Needs-game_name/appid-arg": true
+    },
     "community": {
         "uri": "https://steamcommunity.com/app/@APP_ID",
         "local": true,
@@ -28,14 +91,14 @@
         "Needs-game_name/appid-arg": true
     },
     "settings": {
-        "uri": "steam://open/settings",
+        "uri": "open/settings",
         "local": false,
         "online": false,
         "print-message": "Opening Steam settings...",
         "Needs-game_name/appid-arg": false
     },
     "downloads": {
-        "uri": "steam://open/downloads",
+        "uri": "open/downloads",
         "local": false,
         "online": false,
         "print-message": "Opening Steam downloads manager...",

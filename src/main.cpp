@@ -71,98 +71,8 @@ int main(int argc, char* argv[]) {
         std::filesystem::path config_path = steam::get_exe_directory() / "config" / "Commands.json";
         auto custom_commands = steam::load_custom_commands(config_path);
 
-        //'steam run GAME_NAME' Runs a game
-        if (command == "run") {
-            //'steam run' with no game name
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            //Game name -> App id, or error if not found
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Launching " << game_name << "...";
-            steam::launch_game(app_id);
-        }
-        //'steam verify GAME_NAME' Triggers file validation for a game
-        else if (command == "verify") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Verifying files for " << game_name << "...";
-            steam::verify_game_files(app_id);
-        }
-        //'steam install GAME NAME/APPID' Prompts Steam to install a game
-        else if (command == "install") {
-            if (argc == 2) {
-                throw CLI_ERROR("Missing game name or AppID");
-            }
-
-            std::string arg = argv[2];
-            combine_args(arg);
-
-            std::string app_id;
-
-            // Direct AppID passed
-            if (is_number(arg)) {
-                app_id = arg;
-            }
-            else {
-                // Check installed games locally first
-                app_id = steam::find_appid_by_name(installed_games, arg);
-
-                // Prompt user from online search results if not found locally
-                if (app_id.empty()) {
-                    app_id = steam::search_appid_online(arg);
-                }
-            }
-
-            //Other type of error
-            if (app_id.empty()) {
-                throw CLI_ERROR("Installation cancelled");
-            }
-            //If not found we will error that
-            if (app_id == steam::SEARCH_RESULT_NOT_FOUND) {
-                app_id_not_found(arg);
-            }
-
-            std::cout << "Installing " << app_id << "...\n";
-            steam::install_game(app_id);
-        }
-        //'steam uninstall GAME_NAME' Prompts Steam to uninstall a game
-        else if (command == "uninstall") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Uninstalling " << game_name << "...";
-            steam::uninstall_game(app_id);
-        }
-        //'steam list' Prints all installed, game names are seperated
-        else if (command == "list") {
+        // 'steam list' Prints all installed games
+        if (command == "list") {
             if (installed_games.empty()) {
                 std::cout << "No installed Steam games found.";
                 return 0;
@@ -173,7 +83,7 @@ int main(int argc, char* argv[]) {
                 std::cout << game.name << "\n" << game_sep << "\n";
             }
         }
-        //'steam info GAME_NAME/--all' shows info about a game or all games, if --all game names are seperated
+        // 'steam info GAME_NAME/--all'
         else if (command == "info") {
             if (argc == 2) {
                 throw CLI_ERROR("Missing argument for 'info' (provide a game name or '--all')");
@@ -224,66 +134,9 @@ int main(int argc, char* argv[]) {
                 std::cout << "|\n|" << game_sep << '\n';
             }
         }
-        // 'steam backup GAME NAME'
-        else if (command == "backup") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Opening backup wizard for " << game_name << "...";
-            steam::backup_game(app_id);
-        }
-        // 'steam news GAME NAME'
-        else if (command == "news") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id = steam::search_appid_online(game_name);
-            }
-
-            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Opening news for " << game_name << "...";
-            steam::open_news(app_id);
-        }
-        // 'steam achievements GAME NAME'
-        else if (command == "achievements") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id = steam::search_appid_online(game_name);
-            }
-
-            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Opening achievements for " << game_name << "...";
-            steam::open_achievements(app_id);
-        }
         // 'steam path GAME NAME' -> Opens Steam folder, or game folder if passed
         else if (command == "path") {
             if (argc == 2) {
-                // Return Steam's root path if no game name provided
                 std::cout << steam_path;
                 steam::open_folder(steam_path);
             }
@@ -301,39 +154,7 @@ int main(int argc, char* argv[]) {
                 steam::open_folder(game_path);
             }
         }
-        // 'steam workshop GAME NAME'
-        else if (command == "workshop") {
-            if (argc == 2) {
-                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
-            }
-
-            std::string game_name = argv[2];
-            combine_args(game_name);
-
-            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
-            if (app_id.empty()) {
-                app_id = steam::search_appid_online(game_name);
-            }
-
-            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
-                app_id_not_found(game_name);
-            }
-
-            std::cout << "Opening workshop for " << game_name << "...";
-            steam::open_workshop(app_id);
-        }
-        // 'steam uri URL_OR_COMMAND'
-        else if (command == "uri") {
-            if (argc == 2) {
-                throw CLI_ERROR("Missing URI or command string (ex: 'open/settings' or 'steam://connect/IP')");
-            }
-
-            std::string raw_uri = argv[2];
-            combine_args(raw_uri);
-
-            std::cout << "Executing uri \"" << raw_uri << "\"...";
-            steam::execute_uri(raw_uri);
-        }
+        // Fallback to custom command lookup
         else {
             auto it = custom_commands.find(command);
             if (it != custom_commands.end()) {
