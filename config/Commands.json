@@ -159,5 +159,12 @@
         "online": true,
         "print-message": "Opening Steam client console...",
         "Needs-game_name/appid-arg": false
+    },
+    "support": {
+        "uri": "https://help.steampowered.com/en/wizard/HelpWithGame/?appid=@APP_ID",
+        "local": true,
+        "online": true,
+        "print-message": "Opening steam support for @GAME_NAME...",
+        "Needs-game_name/appid-arg": true
     }
 }

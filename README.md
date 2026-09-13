@@ -42,6 +42,7 @@ My first open-source project
 - `db` -> `steam db GAME NAME / APPID`: **Opens the game's entry on SteamDB**
 - `artwork` -> `steam artwork GAME NAME / APPID`: **Opens community artwork and screenshots for a game**
 - `stats` -> `steam stats GAME NAME / APPID`: **Opens personal stats for a game**
+- `support` -> `steam support GAME NAME / APPID`: **Opens Steam Support for a specific game**
 
 #### Other
 
