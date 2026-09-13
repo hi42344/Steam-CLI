@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <string_view>
 #include <boost/json/src.hpp>
 
 namespace steam {
-    constexpr const char* SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
+    constexpr std::string_view SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
 
     inline std::string get_steam_path() {
         HKEY hKey;
@@ -70,6 +71,26 @@ namespace steam {
     inline void open_achievements(const std::string& app_id) {
         std::string url = "https://steamcommunity.com/my/stats/" + app_id + "/achievements";
         ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    // Opens a game's workshop hub (online)
+    inline void open_workshop(const std::string& app_id) {
+        std::string url = "https://steamcommunity.com/app/" + app_id + "/workshop/";
+        ShellExecuteA(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    inline void execute_uri(const std::string& raw_uri) {
+        std::string uri = raw_uri;
+        // Prefix steam:// if the user provided uri doesn't have a prefix of http/https/steam://
+        if (uri.rfind("steam://", 0) != 0 && uri.rfind("https://", 0) != 0 && uri.rfind("http://", 0) != 0) {
+            uri = "steam://" + uri;
+        }
+        ShellExecuteA(NULL, "open", uri.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
+
+    // Opens the specified filesystem folder in Windows Explorer
+    inline void open_folder(const std::filesystem::path& folder_path) {
+        ShellExecuteA(NULL, "open", folder_path.string().c_str(), NULL, NULL, SW_SHOWNORMAL);
     }
 
     struct SearchResult {
@@ -141,7 +162,7 @@ namespace steam {
                 }
             }
         }
-        catch (const std::exception&) {
+        catch (...) {
             return results;
         }
 
@@ -153,7 +174,7 @@ namespace steam {
         auto results = get_results_online(game_name);
 
         if (results.empty()) {
-            return SEARCH_RESULT_NOT_FOUND;
+            return SEARCH_RESULT_NOT_FOUND.data();
         }
 
         if (results.size() == 1) {

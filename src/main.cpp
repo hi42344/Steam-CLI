@@ -276,6 +276,60 @@ int main(int argc, char* argv[]) {
             std::cout << "Opening achievements for " << game_name << "...";
             steam::open_achievements(app_id);
         }
+        // 'steam path GAME NAME' -> Opens Steam folder, or game folder if passed
+        else if (command == "path") {
+            if (argc == 2) {
+                // Return Steam's root path if no game name provided
+                std::cout << steam_path;
+                steam::open_folder(steam_path);
+            }
+            else {
+                std::string game_name = argv[2];
+                combine_args(game_name);
+
+                steam::GameInfo* game = steam::find_game_by_name(installed_games, game_name);
+                if (!game) {
+                    app_id_not_found(game_name);
+                }
+
+                std::filesystem::path game_path = game->library_path / "common" / game->install_dir;
+                std::cout << game_path.string();
+                steam::open_folder(game_path);
+            }
+        }
+        // 'steam workshop GAME NAME'
+        else if (command == "workshop") {
+            if (argc == 2) {
+                throw CLI_ERROR(MISSING_GAME_NAME_ERROR);
+            }
+
+            std::string game_name = argv[2];
+            combine_args(game_name);
+
+            std::string app_id = steam::find_appid_by_name(installed_games, game_name);
+            if (app_id.empty()) {
+                app_id = steam::search_appid_online(game_name);
+            }
+
+            if (app_id == steam::SEARCH_RESULT_NOT_FOUND || app_id.empty()) {
+                app_id_not_found(game_name);
+            }
+
+            std::cout << "Opening workshop for " << game_name << "...";
+            steam::open_workshop(app_id);
+        }
+        // 'steam uri URL_OR_COMMAND'
+        else if (command == "uri") {
+            if (argc == 2) {
+                throw CLI_ERROR("Missing URI or command string (ex: 'open/settings' or 'steam://connect/IP')");
+            }
+
+            std::string raw_uri = argv[2];
+            combine_args(raw_uri);
+
+            std::cout << "Executing uri \"" << raw_uri << "\"...";
+            steam::execute_uri(raw_uri);
+        }
         else {
             throw CLI_ERROR("Unknown command: " + command);
         }

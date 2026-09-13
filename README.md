@@ -17,7 +17,10 @@ My first open-source project
 - `verify` -> `steam verify GAME NAME`: **Verifys a game**
 - `uninstall` -> `steam uninstall GAME NAME`: **Uninstalls a game**
 - `install` -> `steam install GAME NAME/APP ID`: **Installs a game from either a app id or a name, if a name it gives a list to pick from (if any results)**
-- `search` -> `steam search GAME NAME`: **Searchs for a game and gives a list of results (if any)**
+- `search` -> `steam search GAME NAME/APP ID`: **Searchs for a game and gives a list of results (if any)**
 - `backup` -> `steam backup GAME NAME`: **Opens the backup wizard for a game**
 - `news` -> `steam news GAME NAME`: **Opens the news for a game (checks offline or online (online if game not found locally))**
 - `achievements` -> `steam achievements GAME NAME`: **Opens the achievements of a game on the web (locally or online)**
+- `path` -> `steam path GAME NAME`: **Prints the game's path and opens it in file explorer (bare `steam path` prints steam's path and opens it in file explorer)**
+- `workshop` -> `steam workshop GAME NAME`: **Opens a game workshop (locally installed or online) on the web**
+- `uri` -> `steam uri URL_OR_COMMAND`: **Executes a raw uri, auto adding the 'steam://' prefix if no http://, https://, or steam:// found**
