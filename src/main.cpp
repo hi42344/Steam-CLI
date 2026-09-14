@@ -22,6 +22,7 @@
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
 #include "helpers/Colors.hpp"
+#include "helpers/Enviorment_vars.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -58,7 +59,17 @@ inline void app_id_not_found(const std::string& game_name) {
 int main(int argc, char* argv[]) {
     constexpr const char* MISSING_GAME_NAME_ERROR = "Missing game name";
     constexpr const char* WARNING_ = "Warning: ";
+    //The seperator for when printing games/game infos
+    constexpr const char* GAME_SEP = "-------------";
     try {
+        auto exe_directory = steam::get_exe_directory();
+        //Add to PATH enviorment variable if not already there
+        if (!env_vars::path::has(exe_directory.string())) {
+            env_vars::path::append_permanent(exe_directory.string());
+            std::cout << color::bold << "Added " << exe_directory << " to PATH enviorment variable" << color::reset;
+            return 0;
+        }
+
         if (argc == 1) {
             throw CLI_ERROR("No command provided");
         }
@@ -71,8 +82,6 @@ int main(int argc, char* argv[]) {
             }
             };
 
-        //The seperator for when printing games/game infos
-        constexpr const char* game_sep = "-------------";
         std::string command = argv[1];
 
         // Locate Steam directory and scan libraries
@@ -86,7 +95,6 @@ int main(int argc, char* argv[]) {
         auto installed_games = steam::scan_installed_games(library_paths);
 
         //Getting either EXE_PATH/config/Commands.json or EXE_PATH_parent/config/Commands.json, or if not either one of those, its steam::COMMANDS_JSON_NOT_FOUND
-        auto exe_directory = steam::get_exe_directory();
         std::filesystem::path config_path = exe_directory / "config" / "Commands.json";
 
         if (!std::filesystem::exists(config_path)) {
@@ -110,9 +118,9 @@ int main(int argc, char* argv[]) {
                 return 0;
             }
 
-            std::cout << game_sep << "\n";
+            std::cout << GAME_SEP << "\n";
             for (const auto& game : installed_games) {
-                std::cout << game.name << "\n" << game_sep << "\n";
+                std::cout << game.name << "\n" << GAME_SEP << "\n";
             }
         }
         // 'steam info GAME_NAME/--all'
@@ -130,10 +138,10 @@ int main(int argc, char* argv[]) {
                     return 0;
                 }
 
-                std::cout << "Installed Games (" << installed_games.size() << ")\n" << game_sep << '\n';
+                std::cout << "Installed Games (" << installed_games.size() << ")\n" << GAME_SEP << '\n';
                 for (const auto& game : installed_games) {
                     print_game_info(game);
-                    std::cout << game_sep << '\n';
+                    std::cout << GAME_SEP << '\n';
                 }
             }
             else {
@@ -160,10 +168,10 @@ int main(int argc, char* argv[]) {
                 throw CLI_ERROR("No games found matching \"" + query + "\"");
             }
 
-            std::cout << '|' << game_sep << "\n";
+            std::cout << '|' << GAME_SEP << "\n";
             for (const auto& res : results) {
                 print_search_info(res);
-                std::cout << "|\n|" << game_sep << '\n';
+                std::cout << "|\n|" << GAME_SEP << '\n';
             }
         }
         // 'steam path GAME NAME' -> Opens Steam folder, or game folder if passed

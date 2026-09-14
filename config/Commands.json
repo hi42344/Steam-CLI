@@ -1,34 +1,34 @@
 {
     "run": {
-        "uri": "steam://rungameid/@APP_ID",
+        "uri": "rungameid/@APP_ID",
         "local": true,
         "online": false,
         "print-message": "Launching @GAME_NAME...",
         "Needs-game_name/appid-arg": true
     },
     "verify": {
-        "uri": "steam://validate/@APP_ID",
+        "uri": "validate/@APP_ID",
         "local": true,
         "online": false,
         "print-message": "Verifying files for @GAME_NAME...",
         "Needs-game_name/appid-arg": true
     },
     "install": {
-        "uri": "steam://install/@APP_ID",
+        "uri": "install/@APP_ID",
         "local": true,
         "online": true,
         "print-message": "Installing @GAME_NAME...",
         "Needs-game_name/appid-arg": true
     },
     "uninstall": {
-        "uri": "steam://uninstall/@APP_ID",
+        "uri": "uninstall/@APP_ID",
         "local": true,
         "online": false,
         "print-message": "Uninstalling @GAME_NAME...",
         "Needs-game_name/appid-arg": true
     },
     "backup": {
-        "uri": "steam://backup/@APP_ID",
+        "uri": "backup/@APP_ID",
         "local": true,
         "online": false,
         "print-message": "Opening backup wizard for @GAME_NAME...",
@@ -112,21 +112,21 @@
         "Needs-game_name/appid-arg": false
     },
     "library": {
-        "uri": "steam://open/games",
+        "uri": "open/games",
         "local": false,
         "online": false,
         "print-message": "Switching to Steam Library view...",
         "Needs-game_name/appid-arg": false
     },
     "inventory": {
-        "uri": "steam://open/inventory",
+        "uri": "open/inventory",
         "local": false,
         "online": false,
         "print-message": "Opening Steam inventory...",
         "Needs-game_name/appid-arg": false
     },
     "friends": {
-        "uri": "steam://open/friends",
+        "uri": "open/friends",
         "local": false,
         "online": false,
         "print-message": "Opening Steam Friends list...",
@@ -154,7 +154,7 @@
         "Needs-game_name/appid-arg": true
     },
     "console": {
-        "uri": "steam://open/console",
+        "uri": "open/console",
         "local": true,
         "online": true,
         "print-message": "Opening Steam client console...",
