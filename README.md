@@ -1,5 +1,5 @@
 # Steam-CLI
-My first open-source project
+A tool to use steam from the command line
 
 # License
 
