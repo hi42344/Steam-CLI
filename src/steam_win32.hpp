@@ -22,7 +22,7 @@
 #include <vector>
 #include <filesystem>
 #include <string_view>
-#include <boost/json/src.hpp>
+#include "vdf_parser.hpp"
 
 namespace steam {
     constexpr std::string_view SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
@@ -84,82 +84,6 @@ namespace steam {
             NULL,           // Working directory
             SW_SHOWNORMAL   // Show window flag
         );
-    }
-
-    struct SearchResult {
-        std::string id;
-        std::string name;
-        std::string type;
-    };
-
-    // Fetches online search hits from Steam without forcing interactive selection
-    inline std::vector<SearchResult> get_results_online(const std::string& game_name) {
-        std::vector<SearchResult> results;
-
-        HINTERNET hInternet = ::InternetOpenA("steam-cli", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-        if (!hInternet) return results;
-
-        std::string query = game_name;
-        size_t pos = 0;
-        while ((pos = query.find(' ', pos)) != std::string::npos) {
-            query.replace(pos, 1, "%20");
-            pos += 3;
-        }
-
-        std::string url = "https://store.steampowered.com/api/storesearch/?term=" + query + "&l=english&cc=US";
-
-        HINTERNET hConnect = ::InternetOpenUrlA(hInternet, url.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, 0);
-        if (!hConnect) {
-            ::InternetCloseHandle(hInternet);
-            return results;
-        }
-
-        std::string response;
-        char buffer[4096];
-        DWORD bytesRead = 0;
-
-        while (::InternetReadFile(hConnect, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
-            buffer[bytesRead] = '\0';
-            response += buffer;
-        }
-
-        ::InternetCloseHandle(hConnect);
-        ::InternetCloseHandle(hInternet);
-
-        if (response.empty()) return results;
-
-        try {
-            boost::json::value jv = boost::json::parse(response);
-            const auto& obj = jv.as_object();
-
-            if (obj.contains("items")) {
-                const auto& items = obj.at("items").as_array();
-                for (const auto& item_val : items) {
-                    const auto& item = item_val.as_object();
-
-                    std::string id = std::to_string(item.at("id").as_int64());
-                    std::string name = item.contains("name") ? std::string(item.at("name").as_string()) : "Unknown";
-                    std::string type = item.contains("type") ? std::string(item.at("type").as_string()) : "app";
-
-                    bool exists = false;
-                    for (const auto& res : results) {
-                        if (res.id == id) {
-                            exists = true;
-                            break;
-                        }
-                    }
-
-                    if (!exists) {
-                        results.push_back({ id, name, type });
-                    }
-                }
-            }
-        }
-        catch (...) {
-            return results;
-        }
-
-        return results;
     }
 
     // Wraps get_results_online for interactive flows like `steam install`
