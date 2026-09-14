@@ -22,10 +22,9 @@ My first open-source project
 - `info` -> `steam info GAME NAME` / `steam info --all`: **Displays size, AppID, and install paths for a game or all installed games**
 - `search` -> `steam search QUERY`: **Searches the Steam Store API online for games and displays matching results**
 - `path` -> `steam path GAME NAME`: **Prints and opens the game folder in File Explorer (running `steam path` alone opens the main Steam folder)**
-- `config` -> `steam config`: {
+- `config` -> `steam config`: <ul>
     - `open` -> `steam config open`: **Opens the config/Commands.json file in your default text editor**
-
-}
+</ul>
 
 ### Standard Config Commands
 
