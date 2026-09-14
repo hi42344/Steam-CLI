@@ -22,7 +22,6 @@
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
 #include "helpers/Colors.hpp"
-#include "helpers/Enviorment_vars.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -63,12 +62,6 @@ int main(int argc, char* argv[]) {
     constexpr const char* GAME_SEP = "-------------";
     try {
         auto exe_directory = steam::get_exe_directory();
-        //Add to PATH enviorment variable if not already there
-        if (!env_vars::path::has(exe_directory.string())) {
-            env_vars::path::append_permanent(exe_directory.string());
-            std::cout << color::bold << "Added " << exe_directory << " to PATH enviorment variable" << color::reset;
-            return 0;
-        }
 
         if (argc == 1) {
             throw CLI_ERROR("No command provided");
