@@ -22,7 +22,6 @@
 // SOFTWARE.
 // ============================================================================
 
-//For console colors
 namespace color {
     // Reset
     constexpr const char* reset = "\033[0m";

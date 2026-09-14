@@ -85,6 +85,7 @@ int main(int argc, char* argv[]) {
         auto library_paths = steam::get_all_library_paths(steam_path);
         auto installed_games = steam::scan_installed_games(library_paths);
 
+        //Getting either EXE_PATH/config/Commands.json or EXE_PATH_parent/config/Commands.json, or if not either one of those, its steam::COMMANDS_JSON_NOT_FOUND
         auto exe_directory = steam::get_exe_directory();
         std::filesystem::path config_path = exe_directory / "config" / "Commands.json";
 
