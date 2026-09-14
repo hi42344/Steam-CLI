@@ -24,6 +24,7 @@ My first open-source project
 - `path` -> `steam path GAME NAME`: **Prints and opens the game folder in File Explorer (running `steam path` alone opens the main Steam folder)**
 - `config` -> `steam config`: {
     - `open` -> `steam config open`: **Opens the config/Commands.json file in your default text editor**
+
 }
 
 ### Standard Config Commands
