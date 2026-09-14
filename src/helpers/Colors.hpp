@@ -22,6 +22,8 @@
 // SOFTWARE.
 // ============================================================================
 
+#pragma once
+
 namespace color {
     // Reset
     constexpr const char* reset = "\033[0m";

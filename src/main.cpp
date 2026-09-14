@@ -22,6 +22,7 @@
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
 #include "helpers/Colors.hpp"
+#include "helpers/Misc.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -38,7 +39,10 @@ void print_game_info(const steam::GameInfo& game) {
     std::cout << "Name:         " << game.name << "\n";
     std::cout << "AppID:        " << game.app_id << "\n";
     std::cout << "Size on Disk: " << std::defaultfloat << size_gb << " GB\n";
-    std::cout << "Path:         " << full_path.string() << "\n\n";
+    //Prints the cleaned up path
+    std::string display_full_path = full_path.string();
+    display_full_path = misc::string::path_clean_up(display_full_path);
+    std::cout << "Path:         " << display_full_path << "\n\n";
 }
 
 void print_search_info(const steam::SearchResult& search_res) {
@@ -170,7 +174,7 @@ int main(int argc, char* argv[]) {
         // 'steam path GAME NAME' -> Opens Steam folder, or game folder if passed
         else if (command == "path") {
             if (argc == 2) {
-                std::cout << steam_path;
+                std::cout << misc::string::path_clean_up(steam_path);
                 steam::open_folder(steam_path);
             }
             else {
@@ -183,7 +187,7 @@ int main(int argc, char* argv[]) {
                 }
 
                 std::filesystem::path game_path = game->library_path / "common" / game->install_dir;
-                std::cout << game_path.string();
+                std::cout << misc::string::path_clean_up(game_path.string());
                 steam::open_folder(game_path);
             }
         }

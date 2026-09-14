@@ -101,7 +101,7 @@ namespace steam {
         std::cout << "\nSelect target (1-" << results.size() << "):\n";
         for (size_t i = 0; i < results.size(); ++i) {
             std::cout << "  [" << (i + 1) << "] " << results[i].name
-                << " (" << results[i].type << ", AppID: " << results[i].id << ")\n";
+                << " (type: " << results[i].type << ", AppID: " << results[i].id << ")\n";
         }
         std::cout << "> ";
 
