@@ -1,6 +1,11 @@
 # Steam-CLI
 My first open-source project
 
+# License
+
+- The **Steam-CLI** application as a whole is licensed under the [GNU General Public License v3.0](LICENSE).
+- Standalone utility headers ([`vdf_parser.hpp`](src/vdf_parser.hpp) and [`Colors.hpp`](src/helpers/Colors.hpp)) are dual-licensed under the **MIT License** and can be reused individually in any project without GPL restrictions.
+
 # How To Use
 
 - **Steam must be open in the background or you will have to go log in (at least for me when I tried)**
