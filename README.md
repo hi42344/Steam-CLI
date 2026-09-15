@@ -89,12 +89,32 @@ A tool to use steam from the command line
 
 ## Spell correction
 
-**Some times for local things you will get spell correction if game could not be found, name must be close enough though**
-**This is what getting a spell correction popup looks like when you misspell something:**
+- **Some times for local things you will get spell correction if game could not be found, name must be close enough though**
+- **Inputting x instantly exits out of the spell checking menu**
+- **This is what getting a spell correction popup looks like when you misspell something:**
 
 ```bash
 steam path counter strike 2
 (Y/n/x)
 Did you mean "Counter-Strike 2"?
 > y
+```,
+
+```bash
+steam path schedul
+(Y/n/x)
+Did you mean "Schedule I"?
+> y
+```,
+
+**Example with fake game**
+```bash
+steam path scope y
+(Y/n/x)
+Did you mean "Scope X"?
+> n
+"Scope T"?
+> n
+"Scope j"?
+> x
 ```
