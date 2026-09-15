@@ -24,6 +24,8 @@
 
 #pragma once
 #include <string>
+#include <ranges>
+#include "../vdf_parser.hpp"
 
 namespace misc {
     namespace string {
@@ -51,11 +53,36 @@ namespace misc {
 
         //Normalizes path and uppercases 'c:' if it is the starting part
         inline std::string path_clean_up(std::string str) {
-            if (starts_with(str, "c:")) {
-                str.replace(0, 1, "C");
-            }
+#ifdef _WIN32
+            str.replace(0, 1, "C");
+            replace_all(str, "/", "\\");
+#else
             replace_all(str, "\\", "/");
+#endif
             return str;
         }
+
+        inline std::string upper(std::string str) {
+            std::ranges::transform(str, str.begin(), [](unsigned char c) {
+                return std::toupper(c);
+                });
+            return str;
+        }
+
+        inline std::string lower(std::string str) {
+            std::ranges::transform(str, str.begin(), [](unsigned char c) {
+                return std::tolower(c);
+                });
+            return str;
+        }
+    }
+
+    inline std::vector<std::string> get_installed_game_names(const std::vector<steam::GameInfo>& installed_games) {
+        std::vector<std::string> names;
+        names.reserve(installed_games.size());
+        for (const auto& game : installed_games) {
+            names.push_back(game.name);
+        }
+        return names;
     }
 }

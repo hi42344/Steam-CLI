@@ -143,7 +143,8 @@ namespace steam {
             std::string name_lower = game.name;
             std::transform(name_lower.begin(), name_lower.end(), name_lower.begin(), ::tolower);
 
-            if (name_lower.find(target_lower) != std::string::npos) {
+            // Changed to a stricter version since adding the spell checker negates what help this would do
+            if (name_lower == target_lower) {
                 return &game;
             }
         }

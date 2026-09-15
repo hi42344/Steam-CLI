@@ -18,11 +18,15 @@
 #include <vector>
 #include <iomanip>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
 #include "Custom_commands.hpp"
 #include "helpers/Colors.hpp"
 #include "helpers/Misc.hpp"
+#include "helpers/File.hpp"
+#include "Spell_checker.hpp"
 
 struct CLI_ERROR : std::runtime_error {
     explicit CLI_ERROR(const std::string& msg)
@@ -60,10 +64,13 @@ inline void app_id_not_found(const std::string& game_name) {
 }
 
 int main(int argc, char* argv[]) {
+    using namespace std::chrono_literals;
+
     constexpr const char* MISSING_GAME_NAME_ERROR = "Missing game name";
     constexpr const char* WARNING_ = "Warning: ";
     //The seperator for when printing games/game infos
     constexpr const char* GAME_SEP = "-------------";
+    constexpr const char* CONFIG_FOLDER_NAME = "config";
     try {
         auto exe_directory = steam::get_exe_directory();
 
@@ -92,10 +99,10 @@ int main(int argc, char* argv[]) {
         auto installed_games = steam::scan_installed_games(library_paths);
 
         //Getting either EXE_PATH/config/Commands.json or EXE_PATH_parent/config/Commands.json, or if not either one of those, its steam::COMMANDS_JSON_NOT_FOUND
-        std::filesystem::path config_path = exe_directory / "config" / "Commands.json";
+        std::filesystem::path config_path = exe_directory / CONFIG_FOLDER_NAME / "Commands.json";
 
         if (!std::filesystem::exists(config_path)) {
-            config_path = exe_directory.parent_path() / "config" / "Commands.json";
+            config_path = exe_directory.parent_path() / CONFIG_FOLDER_NAME / "Commands.json";
         }
 
         std::unordered_map<std::string, steam::CustomCommand> custom_commands;
@@ -104,7 +111,7 @@ int main(int argc, char* argv[]) {
             custom_commands = steam::load_custom_commands(config_path.string());
         }
         else {
-            std::cerr << color::warning << WARNING_ << "Could not find config/Commands.json, Custom commands will not be available" << color::reset << "\n";
+            std::cerr << color::warning << WARNING_ << "Could not find config/Commands.json, Custom commands will not be available" << color::reset << '\n';
             config_path = steam::COMMANDS_JSON_NOT_FOUND;
         }
 
@@ -144,7 +151,15 @@ int main(int argc, char* argv[]) {
             else {
                 steam::GameInfo* game = steam::find_game_by_name(installed_games, arg);
                 if (!game) {
-                    app_id_not_found(arg);
+                    // Attempt spell correction
+                    auto game_names = misc::get_installed_game_names(installed_games);
+                    std::string corrected = spell_checker::interactive_closest(arg, game_names);
+
+                    game = steam::find_game_by_name(installed_games, corrected);
+                    //If still found not trigger error
+                    if (!game) {
+                        app_id_not_found(arg);
+                    }
                 }
 
                 print_game_info(*game);
@@ -182,12 +197,20 @@ int main(int argc, char* argv[]) {
                 combine_args(game_name);
 
                 steam::GameInfo* game = steam::find_game_by_name(installed_games, game_name);
+                //Try to see if it was just a spelling mistake
                 if (!game) {
-                    app_id_not_found(game_name);
+                    auto game_names = misc::get_installed_game_names(installed_games);
+                    std::string corrected = spell_checker::interactive_closest(game_name, game_names);
+
+                    game = steam::find_game_by_name(installed_games, corrected);
+                    //If STILL not found then trigger error
+                    if (!game) {
+                        app_id_not_found(game_name);
+                    }
                 }
 
                 std::filesystem::path game_path = game->library_path / "common" / game->install_dir;
-                std::cout << misc::string::path_clean_up(game_path.string());
+                std::cout << color::bold << color::steam_blue << misc::string::path_clean_up(game_path.string()) << color::reset;
                 steam::open_folder(game_path);
             }
         }

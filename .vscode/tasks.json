@@ -10,6 +10,7 @@
                 "-O3",
                 "-static",
                 "-s",
+                "-march=native",
                 "src/*.cpp",
                 "-Isrc",
                 "-o",

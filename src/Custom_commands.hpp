@@ -20,6 +20,8 @@
 #include <iostream>
 #include "steam_win32.hpp"
 #include "vdf_parser.hpp"
+#include "helpers/Misc.hpp"
+#include "Spell_checker.hpp"
 
 namespace steam {
 
@@ -83,7 +85,7 @@ namespace steam {
                 custom_cmds[std::string(key)] = cmd;
             }
         }
-        catch (const std::exception&) {
+        catch (...) {
             // Ignore malformed custom command definitions
         }
 
@@ -108,6 +110,15 @@ namespace steam {
                 // Check local library first if enabled
                 if (cmd.local) {
                     GameInfo* game = find_game_by_name(installed_games, raw_arg);
+
+                    // Spell check fallback if not found locally
+                    if (!game) {
+                        std::vector<std::string> game_names = misc::get_installed_game_names(installed_games);
+
+                        std::string corrected = spell_checker::interactive_closest(raw_arg, game_names);
+                        game = find_game_by_name(installed_games, corrected);
+                    }
+
                     if (game) {
                         app_id = game->app_id;
                         resolved_name = game->name;
