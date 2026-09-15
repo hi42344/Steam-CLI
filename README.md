@@ -98,14 +98,14 @@ steam path counter strike 2
 (Y/n/x)
 Did you mean "Counter-Strike 2"?
 > y
-```,
+```
 
 ```bash
 steam path schedul
 (Y/n/x)
 Did you mean "Schedule I"?
 > y
-```,
+```
 
 **Example with fake game**
 ```bash
