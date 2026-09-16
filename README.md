@@ -66,7 +66,8 @@ A tool to use steam from the command line
 
 ### Configuration Schema
 
-**Add entries to `config/Commands.json` using the following format: (almost all the things all optional, these just show everything for clarity)**
+- **@APP_ID is the app id from the inputted game's app id/literal app id and @GAME_NAME is the game's name**
+- **Add entries to `config/Commands.json` using the following format: (almost all the things all optional, these just show everything for clarity)**
 
 ```json
 {

@@ -263,15 +263,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     catch (const std::exception& e) {
-        std::cerr << color::error << "Error: " << e.what();
+        std::cerr << color::error << "Error: " << e.what() << color::reset;
         return 1;
     }
     catch (const char* msg) {
-        std::cerr << color::error << "Error: " << msg;
+        std::cerr << color::error << "Error: " << msg << color::reset;
         return 1;
     }
     catch (...) {
-        std::cerr << color::error << "Error: unknown exception";
+        std::cerr << color::error << "Error: unknown exception" << color::reset;
         return 1;
     }
 

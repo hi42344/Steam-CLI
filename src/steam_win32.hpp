@@ -23,6 +23,7 @@
 #include <filesystem>
 #include <string_view>
 #include "vdf_parser.hpp"
+#include "helpers/Colors.hpp"
 
 namespace steam {
     constexpr std::string_view SEARCH_RESULT_NOT_FOUND = "<[UNOFFICAL_STEAM_CLI: NO GAME FOUND]>";
@@ -98,16 +99,40 @@ namespace steam {
             return results[0].id;
         }
 
-        std::cout << "\nSelect target (1-" << results.size() << "):\n";
+        std::cout << "\nSelect target (1-" << results.size() << ", x/X to not choose any):\n";
         for (size_t i = 0; i < results.size(); ++i) {
             std::cout << "  [" << (i + 1) << "] " << results[i].name
                 << " (type: " << results[i].type << ", AppID: " << results[i].id << ")\n";
         }
         std::cout << "> ";
 
-        int choice = 0;
-        if (std::cin >> choice && choice > 0 && choice <= static_cast<int>(results.size())) {
-            return results[choice - 1].id;
+        std::string input;
+        if (std::cin >> input) {
+            // Check if user wants to exit
+            if (input == "x" || input == "X") {
+                std::cout << color::error << "Exiting" << color::reset;
+                std::exit(0);
+                return "";
+            }
+
+            try {
+                // Convert string to integer
+                int choice = std::stoi(input);
+
+                // Check 1-based bounds against results vector
+                if (choice > 0 && choice <= static_cast<int>(results.size())) {
+                    return results[choice - 1].id;
+                }
+            }
+            catch (const std::invalid_argument&) {
+                throw std::runtime_error("Choice must be a valid integer");
+            }
+            catch (const std::out_of_range&) {
+                throw std::runtime_error("Choice must be within the size of a 32-bit integer");
+            }
+            catch (...) {
+                throw std::runtime_error("Error in search app id");
+            }
         }
 
         std::cin.clear();
